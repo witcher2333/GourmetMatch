@@ -1,0 +1,19 @@
+%YAML 1.1
+%TAG !u! tag:unity3d.com,2011:
+--- !u!114 &11400000
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 9cd27edb13e01764db0040434d0bb0c6, type: 3}
+  m_Name: FoodCatalog
+  m_EditorClassIdentifier: Assembly-CSharp::ItemCatalog
+  items:
+  - {fileID: 11400000, guid: 75b53c5e0b4ed144fa3cf5469ab92b48, type: 2}
+  - {fileID: 11400000, guid: 4c40a260f92a6a34a9efe3eed2daefc5, type: 2}
+  - {fileID: 11400000, guid: 4599610d4cbe32141bca8c513b34a37a, type: 2}
+  - {fileID: 11400000, guid: 18157d9b16ca6a2438e54dca1a1dc85f, type: 2}
