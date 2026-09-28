@@ -6,6 +6,13 @@ using UnityEngine.UI;
 
 public class MergeBoard : MonoBehaviour
 {
+
+    [SerializeField]
+    private ItemData startingLevel1Item;
+
+    [SerializeField]
+    private ItemData startingLevel2Item;
+
     [SerializeField]
     private RectTransform boardArea;
 
@@ -30,11 +37,11 @@ public class MergeBoard : MonoBehaviour
         }
 
         // 创建最初的四个物品
-        SpawnItem(0, 1);
-        SpawnItem(1, 1);
+        SpawnItem(0, startingLevel1Item);
+        SpawnItem(1, startingLevel1Item);
 
-        SpawnItem(4, 2);
-        SpawnItem(5, 2);
+        SpawnItem(4, startingLevel2Item);
+        SpawnItem(5, startingLevel2Item);
     }
 
     private void CreateSlot(int index)
@@ -59,31 +66,35 @@ public class MergeBoard : MonoBehaviour
     }
 
     // 在指定位置创建物品
-    private void SpawnItem(int slotIndex, int level)
+    private void SpawnItem(
+    int slotIndex,
+    ItemData data
+)
     {
-        BoardSlot slot = slots[slotIndex];
+        BoardSlot slot =
+            slots[slotIndex];
 
-        MergeItem item = Instantiate(
-            itemPrefab,
-            slot.transform
-        );
+        MergeItem item =
+            Instantiate(
+                itemPrefab,
+                slot.transform
+            );
 
-        item.SetLevel(level);
+        item.SetData(data);
 
         item.SnapTo(slot);
     }
 
     // 新增：尝试在随机空格中创建物品
-    public bool TrySpawnItem(int level)
+    public bool TrySpawnItem(ItemData data)
     {
-        // 如果棋盘还没有初始化，就不能生产
         if (slots.Count == 0)
         {
             return false;
         }
 
-        // 第一步：找出所有空格
-        List<BoardSlot> emptySlots = new List<BoardSlot>();
+        List<BoardSlot> emptySlots =
+            new List<BoardSlot>();
 
         foreach (BoardSlot slot in slots)
         {
@@ -93,47 +104,56 @@ public class MergeBoard : MonoBehaviour
             }
         }
 
-        // 第二步：判断棋盘是否已满
         if (emptySlots.Count == 0)
         {
-            Debug.Log("棋盘已满，无法生产！");
+            Debug.Log(
+                "棋盘已满，无法生产！"
+            );
+
             return false;
         }
 
-        // 第三步：随机选择一个空格
-        int randomIndex = Random.Range(0, emptySlots.Count);
+        int randomIndex =
+            Random.Range(
+                0,
+                emptySlots.Count
+            );
 
-        BoardSlot selectedSlot = emptySlots[randomIndex];
+        BoardSlot selectedSlot =
+            emptySlots[randomIndex];
 
-        // 第四步：创建新物品
-        MergeItem newItem = Instantiate(
-            itemPrefab,
-            selectedSlot.transform
-        );
+        MergeItem newItem =
+            Instantiate(
+                itemPrefab,
+                selectedSlot.transform
+            );
 
-        // 设置物品等级
-        newItem.SetLevel(level);
+        newItem.SetData(data);
 
-        // 让物品位于格子中心
         newItem.SnapTo(selectedSlot);
 
-        Debug.Log("成功生产一个 " + level + " 级物品！");
+        Debug.Log(
+            "生产：" + data.itemName
+        );
 
-        // 告诉其他系统，生产成功
         return true;
     }
 
 
     // 获取棋盘上指定等级的食材数量
-    public int CountItemsByLevel(int level)
+    public int CountItems(ItemData targetData)
     {
         int count = 0;
 
         foreach (BoardSlot slot in slots)
         {
-            MergeItem item = slot.GetItem();
+            MergeItem item =
+                slot.GetItem();
 
-            if (item != null && item.Level == level)
+            if (
+                item != null &&
+                item.Data == targetData
+            )
             {
                 count++;
             }
@@ -144,32 +164,37 @@ public class MergeBoard : MonoBehaviour
 
 
     // 尝试消耗一个指定等级的食材
-    public bool TryConsumeItem(int level)
+    public bool TryConsumeItem(
+    ItemData targetData
+)
     {
         foreach (BoardSlot slot in slots)
         {
-            MergeItem item = slot.GetItem();
+            MergeItem item =
+                slot.GetItem();
 
             if (item == null)
             {
                 continue;
             }
 
-            if (item.Level == level)
+            if (item.Data == targetData)
             {
-                // 立即禁用物品，避免同一帧内被重复领取
-                item.gameObject.SetActive(false);
+                item.gameObject.SetActive(
+                    false
+                );
 
-                // 删除这个物品
                 Destroy(item.gameObject);
 
-                Debug.Log("消耗了一个 Lv." + level + " 食材");
+                Debug.Log(
+                    "消耗：" +
+                    targetData.itemName
+                );
 
                 return true;
             }
         }
 
-        // 遍历结束，仍然没有找到目标食材
         return false;
     }
 

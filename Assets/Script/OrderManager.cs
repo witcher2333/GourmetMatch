@@ -1,63 +1,73 @@
-
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
 public class OrderManager : MonoBehaviour
 {
-    // 棋盘系统
     [SerializeField]
     private MergeBoard board;
 
-    // 食材配置总表
+    // 第一种订单物品
     [SerializeField]
-    private ItemCatalog catalog;
+    private ItemData firstOrderItem;
 
-    // 订单文字
+    // 第二种订单物品
+    [SerializeField]
+    private ItemData secondOrderItem;
+
     [SerializeField]
     private TMP_Text orderText;
 
-    // 金币文字
     [SerializeField]
     private TMP_Text coinText;
 
-    // 提交订单按钮
     [SerializeField]
     private Button submitButton;
 
-    // 当前订单需要的食材等级
-    private int currentOrderLevel = 2;
+    private ItemData currentOrderItem;
 
-    // 当前金币数量
     private int coins = 0;
 
     private void Start()
     {
+        currentOrderItem = firstOrderItem;
+
         UpdateUI();
     }
 
-    // 玩家点击提交订单时调用
     public void CompleteOrder()
     {
-        if (board == null || catalog == null)
+        if (board == null)
         {
-            Debug.LogError("订单系统缺少 Board 或 Catalog！");
+            Debug.LogError("OrderManager 没有设置 Board！");
             return;
         }
 
-        // 第一步：检查棋盘是否有需要的食材
+        if (currentOrderItem == null)
+        {
+            Debug.LogError("当前订单没有设置 ItemData！");
+            return;
+        }
+
+        // 检查棋盘上有没有订单要求的物品
         int itemCount =
-            board.CountItemsByLevel(currentOrderLevel);
+            board.CountItems(currentOrderItem);
 
         if (itemCount < 1)
         {
-            Debug.Log("订单无法完成：缺少对应食材！");
+            Debug.Log(
+                "订单无法完成：缺少 " +
+                currentOrderItem.itemName
+            );
+
             return;
         }
 
-        // 第二步：尝试消耗食材
+        // 消耗物品
         bool success =
-            board.TryConsumeItem(currentOrderLevel);
+            board.TryConsumeItem(
+                currentOrderItem
+            );
 
         if (!success)
         {
@@ -65,106 +75,94 @@ public class OrderManager : MonoBehaviour
             return;
         }
 
-        // 第三步：发放奖励
-        int reward = GetReward(currentOrderLevel);
+        // 获得金币
+        int reward =
+            GetReward(currentOrderItem);
 
         coins += reward;
 
         Debug.Log(
-            "订单完成！获得 " + reward + " 金币"
+            "订单完成！获得 " +
+            reward +
+            " 金币"
         );
 
-        // 第四步：生成下一笔订单
+        // 下一笔订单
         GenerateNextOrder();
 
-        // 第五步：更新界面
         UpdateUI();
     }
 
-    // 根据订单难度计算金币奖励
-    private int GetReward(int level)
+    private int GetReward(ItemData item)
     {
-        switch (level)
+        if (item == null)
         {
-            case 2:
-                return 10;
-
-            case 3:
-                return 25;
-
-            case 4:
-                return 50;
-
-            default:
-                return 5;
+            return 0;
         }
+
+        // 暂时按照等级决定奖励
+        return item.level * 10;
     }
 
-    // 生成下一笔订单
     private void GenerateNextOrder()
     {
-        if (currentOrderLevel == 2)
+        if (currentOrderItem == firstOrderItem)
         {
-            currentOrderLevel = 3;
+            currentOrderItem =
+                secondOrderItem;
         }
         else
         {
-            currentOrderLevel = 2;
+            currentOrderItem =
+                firstOrderItem;
         }
     }
 
-    // 更新订单与金币显示
     private void UpdateUI()
     {
-        // 更新金币
         if (coinText != null)
         {
-            coinText.text = "Coins: " + coins;
+            coinText.text =
+                "Coins: " + coins;
         }
 
-        // 如果还没有设置食材总表
-        if (catalog == null)
-        {
-            Debug.LogError("没有设置 Item Catalog！");
-            return;
-        }
-
-        // 查找当前订单的食材数据
-        ItemData data =
-            catalog.GetByLevel(currentOrderLevel);
-
-        // 找不到食材配置时，禁用提交按钮
-        if (data == null)
+        if (currentOrderItem == null)
         {
             if (orderText != null)
             {
-                orderText.text = "Invalid Order";
+                orderText.text =
+                    "No Order";
             }
 
             if (submitButton != null)
             {
-                submitButton.interactable = false;
+                submitButton.interactable =
+                    false;
             }
 
             return;
         }
 
-        // 获取本次订单的金币奖励
-        int reward = GetReward(currentOrderLevel);
+        int reward =
+            GetReward(currentOrderItem);
 
-        // 更新订单文字
         if (orderText != null)
         {
             orderText.text =
-                "Order: 1 x " + data.itemName +
-                " (Lv." + currentOrderLevel + ")" +
-                "\nReward: " + reward + " Coins";
+                "Order: 1 x " +
+                currentOrderItem.itemName +
+                " (Lv." +
+                currentOrderItem.level +
+                ")" +
+                "\nReward: " +
+                reward +
+                " Coins";
         }
 
-        // 订单有效，允许点击提交
         if (submitButton != null)
         {
-            submitButton.interactable = true;
+            submitButton.interactable =
+                true;
         }
     }
 }

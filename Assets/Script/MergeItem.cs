@@ -1,4 +1,3 @@
-
 using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
@@ -11,15 +10,9 @@ public class MergeItem : MonoBehaviour,
     IDragHandler,
     IEndDragHandler
 {
-    // 食材配置总表
-    [SerializeField]
-    private ItemCatalog catalog;
-
-    // 显示等级
     [SerializeField]
     private TMP_Text levelLabel;
 
-    // 显示食材名称
     [SerializeField]
     private TMP_Text nameLabel;
 
@@ -30,8 +23,19 @@ public class MergeItem : MonoBehaviour,
 
     private BoardSlot originalSlot;
 
-    // 当前食材等级
-    public int Level { get; private set; } = 1;
+    // 当前物品的数据
+    public ItemData Data { get; private set; }
+
+    public int Level
+    {
+        get
+        {
+            if (Data == null)
+                return 0;
+
+            return Data.level;
+        }
+    }
 
     private void Awake()
     {
@@ -39,88 +43,92 @@ public class MergeItem : MonoBehaviour,
         canvasGroup = GetComponent<CanvasGroup>();
         itemImage = GetComponent<Image>();
 
-        rootCanvas = GetComponentInParent<Canvas>().rootCanvas;
+        rootCanvas =
+            GetComponentInParent<Canvas>().rootCanvas;
     }
 
-    // 根据等级读取食材数据
-    public void SetLevel(int newLevel)
+    // 设置当前物品
+    public void SetData(ItemData data)
     {
-        if (catalog == null)
-        {
-            Debug.LogError("Item 没有设置 Catalog！");
-            return;
-        }
-
-        ItemData data = catalog.GetByLevel(newLevel);
-
         if (data == null)
         {
-            Debug.LogWarning(
-                "找不到等级 " + newLevel + " 对应的食材！"
-            );
-
+            Debug.LogError("ItemData 为空！");
             return;
         }
 
-        // 更新当前等级
-        Level = data.level;
+        Data = data;
 
-        // 更新等级文字
         if (levelLabel != null)
         {
-            levelLabel.text = Level.ToString();
+            levelLabel.text =
+                "Lv." + Data.level;
         }
 
-        // 更新食材名称
         if (nameLabel != null)
         {
-            nameLabel.text = data.itemName;
+            nameLabel.text =
+                Data.itemName;
         }
 
-        // 有图片就显示图片，没有则使用背景颜色
-        if (data.icon != null)
+        if (Data.icon != null)
         {
-            itemImage.sprite = data.icon;
+            itemImage.sprite = Data.icon;
             itemImage.color = Color.white;
         }
         else
         {
             itemImage.sprite = null;
-            itemImage.color = data.backgroundColor;
+            itemImage.color =
+                Data.backgroundColor;
         }
     }
 
-    // 将物品放到指定格子中心
     public void SnapTo(BoardSlot slot)
     {
-        rectTransform.SetParent(slot.transform, false);
+        rectTransform.SetParent(
+            slot.transform,
+            false
+        );
 
-        rectTransform.anchorMin = new Vector2(0.5f, 0.5f);
-        rectTransform.anchorMax = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMin =
+            new Vector2(0.5f, 0.5f);
 
-        rectTransform.pivot = new Vector2(0.5f, 0.5f);
+        rectTransform.anchorMax =
+            new Vector2(0.5f, 0.5f);
 
-        rectTransform.sizeDelta = new Vector2(74, 74);
+        rectTransform.pivot =
+            new Vector2(0.5f, 0.5f);
 
-        rectTransform.anchoredPosition = Vector2.zero;
+        rectTransform.sizeDelta =
+            new Vector2(74, 74);
 
-        rectTransform.localScale = Vector3.one;
+        rectTransform.anchoredPosition =
+            Vector2.zero;
+
+        rectTransform.localScale =
+            Vector3.one;
     }
 
-    // 开始拖动
-    public void OnBeginDrag(PointerEventData eventData)
+    public void OnBeginDrag(
+        PointerEventData eventData
+    )
     {
-        originalSlot = GetComponentInParent<BoardSlot>();
+        originalSlot =
+            GetComponentInParent<BoardSlot>();
 
-        rectTransform.SetParent(rootCanvas.transform, true);
+        rectTransform.SetParent(
+            rootCanvas.transform,
+            true
+        );
 
         canvasGroup.blocksRaycasts = false;
 
         OnDrag(eventData);
     }
 
-    // 拖动中
-    public void OnDrag(PointerEventData eventData)
+    public void OnDrag(
+        PointerEventData eventData
+    )
     {
         RectTransform canvasRect =
             rootCanvas.transform as RectTransform;
@@ -128,21 +136,24 @@ public class MergeItem : MonoBehaviour,
         Vector2 localPoint;
 
         bool success =
-            RectTransformUtility.ScreenPointToLocalPointInRectangle(
-                canvasRect,
-                eventData.position,
-                eventData.pressEventCamera,
-                out localPoint
-            );
+            RectTransformUtility
+                .ScreenPointToLocalPointInRectangle(
+                    canvasRect,
+                    eventData.position,
+                    eventData.pressEventCamera,
+                    out localPoint
+                );
 
         if (success)
         {
-            rectTransform.anchoredPosition = localPoint;
+            rectTransform.anchoredPosition =
+                localPoint;
         }
     }
 
-    // 结束拖动
-    public void OnEndDrag(PointerEventData eventData)
+    public void OnEndDrag(
+        PointerEventData eventData
+    )
     {
         canvasGroup.blocksRaycasts = true;
 
@@ -154,57 +165,61 @@ public class MergeItem : MonoBehaviour,
         if (targetObject != null)
         {
             targetSlot =
-                targetObject.GetComponentInParent<BoardSlot>();
+                targetObject
+                    .GetComponentInParent<BoardSlot>();
         }
 
-        // 未拖到有效格子
+        // 没拖到棋盘
         if (targetSlot == null)
         {
             SnapTo(originalSlot);
             return;
         }
 
-        // 拖回原格子
+        // 回到原格子
         if (targetSlot == originalSlot)
         {
             SnapTo(originalSlot);
             return;
         }
 
-        MergeItem targetItem = targetSlot.GetItem();
+        MergeItem targetItem =
+            targetSlot.GetItem();
 
-        // 空格子：直接移动
+        // 空格：直接移动
         if (targetItem == null)
         {
             SnapTo(targetSlot);
             return;
         }
 
-        // 等级相同，尝试合成
-        if (targetItem.Level == Level)
+        // 只有完全相同的 ItemData 才允许合成
+        if (targetItem.Data == Data)
         {
-            // 检查是否还有下一级
-            ItemData nextData = catalog.GetByLevel(Level + 1);
-
-            // 如果已经达到最高等级，则不能合成
-            if (nextData == null)
+            // 已达到最高等级
+            if (Data.nextItem == null)
             {
-                Debug.Log("已经达到当前最高等级！");
+                Debug.Log(
+                    Data.itemName +
+                    " 已经是最高等级"
+                );
 
                 SnapTo(originalSlot);
                 return;
             }
 
-            // 将目标物品升级
-            targetItem.SetLevel(nextData.level);
+            // 升级目标物品
+            targetItem.SetData(
+                Data.nextItem
+            );
 
-            // 删除拖过来的物品
+            // 删除当前物品
             Destroy(gameObject);
 
             return;
         }
 
-        // 等级不同：返回原位
+        // 不同物品不能合成
         SnapTo(originalSlot);
     }
 }
