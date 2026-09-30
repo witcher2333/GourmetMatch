@@ -1,6 +1,7 @@
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
+using System;
 
 public class FoodProducer : MonoBehaviour
 {
@@ -22,10 +23,15 @@ public class FoodProducer : MonoBehaviour
 
     private int currentEnergy;
 
+    [SerializeField]
+    private int energyRecoverySeconds = 300;
+
+    private DateTime lastEnergyTimeUtc;
+
     private void Start()
     {
         currentEnergy = Mathf.Max(0, maxEnergy);
-
+        lastEnergyTimeUtc = DateTime.UtcNow;
         UpdateUI();
     }
 
@@ -52,7 +58,7 @@ public class FoodProducer : MonoBehaviour
 
         // 随机选择一种基础食材
         int randomIndex =
-            Random.Range(0, possibleItems.Length);
+            UnityEngine.Random.Range(0, possibleItems.Length);
 
         ItemData itemToProduce =
             possibleItems[randomIndex];
@@ -63,7 +69,17 @@ public class FoodProducer : MonoBehaviour
 
         if (success)
         {
+            bool wasFull = currentEnergy == maxEnergy;
+
             currentEnergy--;
+
+            // 如果刚才是满体力，
+            // 从此次消耗开始计算恢复时间
+            if (wasFull)
+            {
+                lastEnergyTimeUtc =
+                    DateTime.UtcNow;
+            }
 
             Debug.Log(
                 "消耗 1 点体力，剩余：" +
@@ -76,13 +92,48 @@ public class FoodProducer : MonoBehaviour
 
     private void UpdateUI()
     {
-        if (energyText != null)
+        if (currentEnergy >= maxEnergy)
         {
             energyText.text =
                 "Energy: " +
                 currentEnergy +
                 " / " +
-                maxEnergy;
+                maxEnergy +
+                "\nFull";
+        }
+        else
+        {
+            TimeSpan elapsed =
+                DateTime.UtcNow -
+                lastEnergyTimeUtc;
+
+            int remainingSeconds =
+                energyRecoverySeconds -
+                Mathf.FloorToInt(
+                    (float)elapsed.TotalSeconds
+                );
+
+            remainingSeconds =
+                Mathf.Max(
+                    0,
+                    remainingSeconds
+                );
+
+            int minutes =
+                remainingSeconds / 60;
+
+            int seconds =
+                remainingSeconds % 60;
+
+            energyText.text =
+                "Energy: " +
+                currentEnergy +
+                " / " +
+                maxEnergy +
+                "\nNext: " +
+                minutes.ToString("00") +
+                ":" +
+                seconds.ToString("00");
         }
 
         if (produceButton != null)
@@ -90,5 +141,124 @@ public class FoodProducer : MonoBehaviour
             produceButton.interactable =
                 currentEnergy > 0;
         }
+    }
+
+    //using Json save the energy
+    public int GetCurrentEnergy()
+    {
+        return currentEnergy;
+    }
+
+    public string GetLastEnergyTimeUtc()
+    {
+        return lastEnergyTimeUtc.ToString("O");
+    }
+
+    public void LoadEnergyState(
+    int savedEnergy,
+    string savedTimeUtc
+)
+    {
+        currentEnergy =
+            Mathf.Clamp(
+                savedEnergy,
+                0,
+                maxEnergy
+            );
+
+        DateTime parsedTime;
+
+        bool success =
+            DateTime.TryParse(
+                savedTimeUtc,
+                null,
+                System.Globalization.DateTimeStyles.RoundtripKind,
+                out parsedTime
+            );
+
+        if (success)
+        {
+            lastEnergyTimeUtc =
+                parsedTime.ToUniversalTime();
+        }
+        else
+        {
+            lastEnergyTimeUtc =
+                DateTime.UtcNow;
+        }
+
+        // 立刻计算离线期间恢复的体力
+        RecoverEnergy();
+
+        UpdateUI();
+    }
+
+    public void SetCurrentEnergy(
+    int energy
+)
+    {
+        currentEnergy =
+            Mathf.Clamp(
+                energy,
+                0,
+                maxEnergy
+            );
+
+        UpdateUI();
+    }
+
+    private void RecoverEnergy()
+    {
+        // 已满体力，不继续累计
+        if (currentEnergy >= maxEnergy)
+        {
+            currentEnergy = maxEnergy;
+
+            lastEnergyTimeUtc = DateTime.UtcNow;
+
+            return;
+        }
+
+        TimeSpan elapsed =
+            DateTime.UtcNow - lastEnergyTimeUtc;
+
+        int recoveredEnergy =
+            Mathf.FloorToInt(
+                (float)elapsed.TotalSeconds /
+                energyRecoverySeconds
+            );
+
+        // 时间还没到
+        if (recoveredEnergy <= 0)
+        {
+            return;
+        }
+
+        currentEnergy =
+            Mathf.Min(
+                currentEnergy + recoveredEnergy,
+                maxEnergy
+            );
+
+        // 把时间向后推进已经使用掉的恢复周期
+        lastEnergyTimeUtc =
+            lastEnergyTimeUtc.AddSeconds(
+                recoveredEnergy *
+                energyRecoverySeconds
+            );
+
+        // 如果已经满了，从当前时间重新开始
+        if (currentEnergy >= maxEnergy)
+        {
+            lastEnergyTimeUtc =
+                DateTime.UtcNow;
+        }
+
+        UpdateUI();
+    }
+
+    private void Update()
+    {
+        RecoverEnergy();
     }
 }

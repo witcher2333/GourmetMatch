@@ -1,6 +1,7 @@
 
 
 using System.Collections.Generic;
+using Unity.VisualScripting;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -198,5 +199,106 @@ public class MergeBoard : MonoBehaviour
         return false;
     }
 
+    //Json save data
+    public List<SlotSaveData> GetBoardSaveData()
+    {
+        List<SlotSaveData> saveItems =
+            new List<SlotSaveData>();
+
+        for (int i = 0; i < slots.Count; i++)
+        {
+            MergeItem item =
+                slots[i].GetItem();
+
+            if (item == null ||
+                item.Data == null)
+            {
+                continue;
+            }
+
+            SlotSaveData saveData =
+                new SlotSaveData();
+
+            saveData.slotIndex = i;
+            saveData.itemId =
+                item.Data.itemId;
+
+            saveItems.Add(saveData);
+        }
+
+        return saveItems;
+    }
+
+    //clean the table
+    public void ClearBoard()
+    {
+        foreach (BoardSlot slot in slots)
+        {
+            MergeItem item =
+                slot.GetItem();
+
+            if (item != null)
+            {
+                item.gameObject.SetActive(false);
+                Destroy(item.gameObject);
+            }
+        }
+    }
+
+    //recovery the table from the json
+    public void LoadBoard(
+    List<SlotSaveData> savedItems,
+    ItemCatalog catalog
+)
+    {
+        if (catalog == null)
+        {
+            Debug.LogError(
+                "LoadBoard 缺少 ItemCatalog！"
+            );
+
+            return;
+        }
+
+        ClearBoard();
+
+        foreach (SlotSaveData savedItem
+                 in savedItems)
+        {
+            if (savedItem.slotIndex < 0 ||
+                savedItem.slotIndex >= slots.Count)
+            {
+                Debug.LogWarning(
+                    "非法 Slot Index: " +
+                    savedItem.slotIndex
+                );
+
+                continue;
+            }
+
+            ItemData data =
+                catalog.GetById(
+                    savedItem.itemId
+                );
+
+            if (data == null)
+            {
+                continue;
+            }
+
+            BoardSlot slot =
+                slots[savedItem.slotIndex];
+
+            MergeItem item =
+                Instantiate(
+                    itemPrefab,
+                    slot.transform
+                );
+
+            item.SetData(data);
+
+            item.SnapTo(slot);
+        }
+    }
 
 }
