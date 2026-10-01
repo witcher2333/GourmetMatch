@@ -80,6 +80,26 @@ public class MergeBoard : MonoBehaviour
     ItemData data
 )
     {
+        if (data == null)
+        {
+            Debug.LogError(
+                "SpawnItem 收到了空的 ItemData！"
+            );
+
+            return;
+        }
+
+        if (slotIndex < 0 ||
+            slotIndex >= slots.Count)
+        {
+            Debug.LogError(
+                "SpawnItem 收到了非法 Slot Index：" +
+                slotIndex
+            );
+
+            return;
+        }
+
         BoardSlot slot =
             slots[slotIndex];
 
@@ -231,6 +251,16 @@ public class MergeBoard : MonoBehaviour
             saveData.itemId =
                 item.Data.itemId;
 
+            if (item.Data.itemType ==
+                ItemType.Producer)
+            {
+                saveData.producerCharges =
+                    item.GetProducerCharges();
+
+                saveData.producerCooldownEndUtc =
+                    item.GetProducerCooldownEndUtc();
+            }
+
             saveItems.Add(saveData);
         }
 
@@ -304,6 +334,15 @@ public class MergeBoard : MonoBehaviour
                 );
 
             item.SetData(data);
+
+            if (data.itemType ==
+                ItemType.Producer)
+            {
+                item.LoadProducerState(
+                    savedItem.producerCharges,
+                    savedItem.producerCooldownEndUtc
+                );
+            }
 
             item.SnapTo(slot);
         }

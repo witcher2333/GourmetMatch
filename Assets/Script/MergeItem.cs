@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
+using System;
 
 [RequireComponent(typeof(Image))]
 [RequireComponent(typeof(CanvasGroup))]
@@ -27,6 +28,19 @@ public class MergeItem : MonoBehaviour,
     private MergeBoard board;
     private FoodProducer energySystem;
 
+    // ===== Producer Runtime State =====
+    //还剩多少次
+    private int currentCharges;
+
+    //冷却结束时间
+    private DateTime cooldownEndUtc;
+
+    //是否已经初始化过
+    private bool producerStateInitialized = false;
+
+    // 每秒刷新一次生产器冷却显示
+    private float producerUiTimer = 0f;
+
     // 当前物品的数据
     public ItemData Data { get; private set; }
 
@@ -51,10 +65,31 @@ public class MergeItem : MonoBehaviour,
             GetComponentInParent<Canvas>().rootCanvas;
 
         board =
-    FindFirstObjectByType<MergeBoard>();
+            FindFirstObjectByType<MergeBoard>();
 
         energySystem =
             FindFirstObjectByType<FoodProducer>();
+    }
+
+    private void Update()
+    {
+        if (Data == null ||
+            Data.itemType != ItemType.Producer)
+        {
+            return;
+        }
+
+        producerUiTimer += Time.deltaTime;
+
+        if (producerUiTimer < 1f)
+        {
+            return;
+        }
+
+        producerUiTimer = 0f;
+
+        RefreshProducerCooldown();
+        UpdateProducerDisplay();
     }
 
     // 设置当前物品
@@ -68,13 +103,24 @@ public class MergeItem : MonoBehaviour,
 
         Data = data;
 
+        if (Data.itemType == ItemType.Producer &&
+            !producerStateInitialized)
+        {
+            currentCharges =
+                Mathf.Max(0, Data.maxCharges);
+
+            cooldownEndUtc =
+                DateTime.MinValue;
+
+            producerStateInitialized = true;
+        }
+
         if (levelLabel != null)
         {
             if (Data.itemType ==
                 ItemType.Producer)
             {
-                levelLabel.text =
-                    "Producer";
+                UpdateProducerDisplay();
             }
             else
             {
@@ -274,6 +320,8 @@ public class MergeItem : MonoBehaviour,
             return;
         }
 
+        RefreshProducerCooldown();
+
         // 没配置生产物
         if (Data.producedItem == null)
         {
@@ -300,6 +348,33 @@ public class MergeItem : MonoBehaviour,
         {
             Debug.LogError(
                 "Producer 找不到 FoodProducer！"
+            );
+
+            return;
+        }
+
+        // 没有剩余生产次数
+        if (currentCharges <= 0)
+        {
+            UpdateProducerDisplay();
+
+            TimeSpan remaining =
+                cooldownEndUtc -
+                DateTime.UtcNow;
+
+            int seconds =
+                Mathf.Max(
+                    0,
+                    Mathf.CeilToInt(
+                        (float)remaining.TotalSeconds
+                    )
+                );
+
+            Debug.Log(
+                Data.itemName +
+                " 正在冷却，剩余 " +
+                seconds +
+                " 秒"
             );
 
             return;
@@ -334,11 +409,226 @@ public class MergeItem : MonoBehaviour,
 
         if (success)
         {
+            currentCharges--;
+
             Debug.Log(
                 Data.itemName +
                 " 生产了 " +
-                Data.producedItem.itemName
+                Data.producedItem.itemName +
+                "，剩余次数：" +
+                currentCharges
+            );
+
+            // 次数耗尽，开始冷却
+            if (currentCharges <= 0)
+            {
+                currentCharges = 0;
+
+                cooldownEndUtc =
+                    DateTime.UtcNow.AddSeconds(
+                        Mathf.Max(0, Data.cooldownSeconds)
+                    );
+
+                Debug.Log(
+                    Data.itemName +
+                    " 次数耗尽，开始冷却！"
+                );
+            }
+
+            RefreshProducerCooldown();
+            UpdateProducerDisplay();
+        }
+    }
+
+    private void RefreshProducerCooldown()
+    {
+        if (Data == null ||
+            Data.itemType != ItemType.Producer)
+        {
+            return;
+        }
+
+        // 还有次数，不需要冷却
+        if (currentCharges > 0)
+        {
+            return;
+        }
+
+        // 没有设置冷却结束时间
+        if (cooldownEndUtc == DateTime.MinValue)
+        {
+            return;
+        }
+
+        // 冷却完成
+        if (DateTime.UtcNow >= cooldownEndUtc)
+        {
+            currentCharges =
+                Mathf.Max(0, Data.maxCharges);
+
+            cooldownEndUtc =
+                DateTime.MinValue;
+
+            Debug.Log(
+                Data.itemName +
+                " 冷却完成，恢复至 " +
+                currentCharges +
+                " 次"
             );
         }
+    }
+
+    private void UpdateProducerDisplay()
+    {
+        if (Data == null ||
+            Data.itemType != ItemType.Producer ||
+            levelLabel == null)
+        {
+            return;
+        }
+
+        int maxCharges =
+            Mathf.Max(0, Data.maxCharges);
+
+        if (currentCharges > 0)
+        {
+            levelLabel.text =
+                currentCharges +
+                " / " +
+                maxCharges;
+
+            return;
+        }
+
+        if (cooldownEndUtc == DateTime.MinValue)
+        {
+            levelLabel.text =
+                "0 / " + maxCharges;
+
+            return;
+        }
+
+        TimeSpan remaining =
+            cooldownEndUtc - DateTime.UtcNow;
+
+        if (remaining.TotalSeconds <= 0)
+        {
+            levelLabel.text =
+                maxCharges +
+                " / " +
+                maxCharges;
+
+            return;
+        }
+
+        int totalSeconds =
+            Mathf.CeilToInt(
+                (float)remaining.TotalSeconds
+            );
+
+        int minutes = totalSeconds / 60;
+        int seconds = totalSeconds % 60;
+
+        levelLabel.text =
+            "Cooling\n" +
+            minutes.ToString("00") +
+            ":" +
+            seconds.ToString("00");
+    }
+
+    public int GetProducerCharges()
+    {
+        if (Data == null ||
+            Data.itemType != ItemType.Producer)
+        {
+            return 0;
+        }
+
+        RefreshProducerCooldown();
+
+        return currentCharges;
+    }
+
+    public string GetProducerCooldownEndUtc()
+    {
+        if (Data == null ||
+            Data.itemType != ItemType.Producer)
+        {
+            return "";
+        }
+
+        RefreshProducerCooldown();
+
+        if (cooldownEndUtc == DateTime.MinValue)
+        {
+            return "";
+        }
+
+        return cooldownEndUtc.ToString("O");
+    }
+
+    public void LoadProducerState(
+        int savedCharges,
+        string savedCooldownEndUtc
+    )
+    {
+        if (Data == null ||
+            Data.itemType != ItemType.Producer)
+        {
+            return;
+        }
+
+        producerStateInitialized = true;
+
+        int maxCharges =
+            Mathf.Max(0, Data.maxCharges);
+
+        // 兼容 Day8 的旧存档：旧格式没有生产器状态。
+        if (savedCharges == 0 &&
+            string.IsNullOrEmpty(savedCooldownEndUtc))
+        {
+            currentCharges = maxCharges;
+            cooldownEndUtc = DateTime.MinValue;
+            UpdateProducerDisplay();
+            return;
+        }
+
+        currentCharges =
+            Mathf.Clamp(
+                savedCharges,
+                0,
+                maxCharges
+            );
+
+        cooldownEndUtc = DateTime.MinValue;
+
+        if (currentCharges <= 0)
+        {
+            DateTime parsedTime;
+
+            bool parsed =
+                DateTime.TryParse(
+                    savedCooldownEndUtc,
+                    null,
+                    System.Globalization
+                        .DateTimeStyles
+                        .RoundtripKind,
+                    out parsedTime
+                );
+
+            if (parsed)
+            {
+                cooldownEndUtc =
+                    parsedTime.ToUniversalTime();
+            }
+            else
+            {
+                // 无法解析的冷却时间不能让生产器永久卡在 0 次。
+                currentCharges = maxCharges;
+            }
+        }
+
+        RefreshProducerCooldown();
+        UpdateProducerDisplay();
     }
 }

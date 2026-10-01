@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40067c85fa121b645a015f72b5060ffa, type: 3}
   m_Name: Item_FlourProducer
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemId: 
-  itemName: 
-  itemType: 0
+  itemId: flour_producer
+  itemName: Flour Bag
+  itemType: 1
   level: 1
-  icon: {fileID: 0}
+  icon: {fileID: 8663429314458326037, guid: 78d8163c5125f1d459086293d9892ff4, type: 3}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   nextItem: {fileID: 0}
-  producedItem: {fileID: 0}
+  producedItem: {fileID: 11400000, guid: 75b53c5e0b4ed144fa3cf5469ab92b48, type: 2}
   productionEnergyCost: 1
+  maxCharges: 5
+  cooldownSeconds: 30

@@ -70,10 +70,13 @@ public class SaveManager : MonoBehaviour
         saveData.coins =
             orderManager.GetCoins();
 
-        // 当前订单
-        saveData.orderIndex =
-            orderManager
-                .GetCurrentOrderIndex();
+        // 当前随机订单内容
+        saveData.orderRequirements =
+            orderManager.GetOrderSaveData();
+
+        // 当前订单奖励
+        saveData.orderReward =
+            orderManager.GetCurrentOrderReward();
 
         // 转换成 JSON
         string json =
@@ -138,10 +141,12 @@ public class SaveManager : MonoBehaviour
     saveData.lastEnergyTimeUtc
 );
 
-        // 恢复金币和订单
+        // 恢复金币和随机订单
         orderManager.LoadState(
             saveData.coins,
-            saveData.orderIndex
+            saveData.orderRequirements,
+            saveData.orderReward,
+            catalog
         );
 
         Debug.Log(

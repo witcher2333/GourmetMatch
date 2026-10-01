@@ -12,12 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40067c85fa121b645a015f72b5060ffa, type: 3}
   m_Name: Item_MilkProducer
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemId: 
-  itemName: 
-  itemType: 0
+  itemId: milk_producer
+  itemName: Milk Box
+  itemType: 1
   level: 1
-  icon: {fileID: 0}
+  icon: {fileID: -3047742616662783870, guid: 2618b45e277aeeb4581a29938df51249, type: 3}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   nextItem: {fileID: 0}
-  producedItem: {fileID: 0}
+  producedItem: {fileID: 11400000, guid: 182c88a65d11cd1458a58d2d338bcfbb, type: 2}
   productionEnergyCost: 1
+  maxCharges: 5
+  cooldownSeconds: 30

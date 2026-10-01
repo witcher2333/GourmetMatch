@@ -12,7 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40067c85fa121b645a015f72b5060ffa, type: 3}
   m_Name: Item_Flour
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  level: 1
+  itemId: flour
   itemName: Flour
+  itemType: 0
+  level: 1
   icon: {fileID: 9132784678072903462, guid: d3d4b490e51fd9b4ea98d4b0c2e3e531, type: 3}
   backgroundColor: {r: 0.9490196, g: 0.7490196, b: 0.34901962, a: 1}
+  nextItem: {fileID: 11400000, guid: 4c40a260f92a6a34a9efe3eed2daefc5, type: 2}
+  producedItem: {fileID: 0}
+  productionEnergyCost: 1
+  maxCharges: 5
+  cooldownSeconds: 30

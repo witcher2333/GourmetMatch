@@ -42,4 +42,10 @@ public class ItemData : ScriptableObject
 
     // 每次生产消耗多少体力
     public int productionEnergyCost = 1;
+
+    // 最大生产次数
+    public int maxCharges = 5;
+
+    // 次数耗尽后的冷却时间（秒）
+    public int cooldownSeconds = 30;
 }

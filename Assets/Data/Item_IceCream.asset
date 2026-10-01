@@ -12,9 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40067c85fa121b645a015f72b5060ffa, type: 3}
   m_Name: Item_IceCream
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemId: 
-  itemName: 
-  level: 1
-  icon: {fileID: 0}
+  itemId: ice_cream
+  itemName: Ice Cream
+  itemType: 0
+  level: 3
+  icon: {fileID: 5101622285157650532, guid: bf957912b5a26744eba6f28b81049f0a, type: 3}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
-  nextItem: {fileID: 0}
+  nextItem: {fileID: 11400000, guid: 3aab1450c9f30a24bacbf39250af8dde, type: 2}
+  producedItem: {fileID: 0}
+  productionEnergyCost: 1
+  maxCharges: 5
+  cooldownSeconds: 30

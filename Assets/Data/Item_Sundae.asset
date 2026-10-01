@@ -12,9 +12,14 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 40067c85fa121b645a015f72b5060ffa, type: 3}
   m_Name: Item_Sundae
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
-  itemId: 
-  itemName: 
-  level: 1
-  icon: {fileID: 0}
+  itemId: sundae
+  itemName: Sundae
+  itemType: 0
+  level: 4
+  icon: {fileID: -7461290966135434722, guid: e7b41d335ced19d4883833c12ca0acab, type: 3}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   nextItem: {fileID: 0}
+  producedItem: {fileID: 0}
+  productionEnergyCost: 1
+  maxCharges: 5
+  cooldownSeconds: 30
