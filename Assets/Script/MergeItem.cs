@@ -8,7 +8,8 @@ using TMPro;
 public class MergeItem : MonoBehaviour,
     IBeginDragHandler,
     IDragHandler,
-    IEndDragHandler
+    IEndDragHandler,
+    IPointerClickHandler
 {
     [SerializeField]
     private TMP_Text levelLabel;
@@ -22,6 +23,9 @@ public class MergeItem : MonoBehaviour,
     private Image itemImage;
 
     private BoardSlot originalSlot;
+
+    private MergeBoard board;
+    private FoodProducer energySystem;
 
     // 当前物品的数据
     public ItemData Data { get; private set; }
@@ -45,6 +49,12 @@ public class MergeItem : MonoBehaviour,
 
         rootCanvas =
             GetComponentInParent<Canvas>().rootCanvas;
+
+        board =
+    FindFirstObjectByType<MergeBoard>();
+
+        energySystem =
+            FindFirstObjectByType<FoodProducer>();
     }
 
     // 设置当前物品
@@ -60,8 +70,17 @@ public class MergeItem : MonoBehaviour,
 
         if (levelLabel != null)
         {
-            levelLabel.text =
-                "Lv." + Data.level;
+            if (Data.itemType ==
+                ItemType.Producer)
+            {
+                levelLabel.text =
+                    "Producer";
+            }
+            else
+            {
+                levelLabel.text =
+                    "Lv." + Data.level;
+            }
         }
 
         if (nameLabel != null)
@@ -193,6 +212,21 @@ public class MergeItem : MonoBehaviour,
             return;
         }
 
+        if (Data != null &&
+    Data.itemType == ItemType.Producer)
+        {
+            SnapTo(originalSlot);
+            return;
+        }
+
+        if (targetItem.Data != null &&
+            targetItem.Data.itemType ==
+                ItemType.Producer)
+        {
+            SnapTo(originalSlot);
+            return;
+        }
+
         // 只有完全相同的 ItemData 才允许合成
         if (targetItem.Data == Data)
         {
@@ -221,5 +255,90 @@ public class MergeItem : MonoBehaviour,
 
         // 不同物品不能合成
         SnapTo(originalSlot);
+    }
+
+    //点击生产器
+    public void OnPointerClick(
+    PointerEventData eventData
+)
+    {
+        // 没有数据
+        if (Data == null)
+        {
+            return;
+        }
+
+        // 普通食材点击没有效果
+        if (Data.itemType != ItemType.Producer)
+        {
+            return;
+        }
+
+        // 没配置生产物
+        if (Data.producedItem == null)
+        {
+            Debug.LogError(
+                Data.itemName +
+                " 没有配置 Produced Item！"
+            );
+
+            return;
+        }
+
+        // 没找到棋盘
+        if (board == null)
+        {
+            Debug.LogError(
+                "Producer 找不到 MergeBoard！"
+            );
+
+            return;
+        }
+
+        // 没找到体力系统
+        if (energySystem == null)
+        {
+            Debug.LogError(
+                "Producer 找不到 FoodProducer！"
+            );
+
+            return;
+        }
+
+        // 先检查棋盘空间
+        if (!board.HasEmptySlot())
+        {
+            Debug.Log(
+                "棋盘已满，无法生产！"
+            );
+
+            return;
+        }
+
+        // 再尝试扣体力
+        bool paid =
+            energySystem.TrySpendEnergy(
+                Data.productionEnergyCost
+            );
+
+        if (!paid)
+        {
+            return;
+        }
+
+        // 最后真正生成物品
+        bool success =
+            board.TrySpawnItem(
+                Data.producedItem
+            );
+
+        if (success)
+        {
+            Debug.Log(
+                Data.itemName +
+                " 生产了 " +
+                Data.producedItem.itemName
+            );
+        }
     }
 }

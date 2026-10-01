@@ -261,4 +261,48 @@ public class FoodProducer : MonoBehaviour
     {
         RecoverEnergy();
     }
+
+    //energy administration
+    public bool TrySpendEnergy(int amount)
+    {
+        if (amount <= 0)
+        {
+            return true;
+        }
+
+        if (currentEnergy < amount)
+        {
+            Debug.Log(
+                "体力不足，需要 " +
+                amount +
+                " 点体力！"
+            );
+
+            return false;
+        }
+
+        bool wasFull =
+            currentEnergy == maxEnergy;
+
+        currentEnergy -= amount;
+
+        // 从满体力开始消耗时，
+        // 从现在开始计算下一点恢复
+        if (wasFull)
+        {
+            lastEnergyTimeUtc =
+                DateTime.UtcNow;
+        }
+
+        UpdateUI();
+
+        Debug.Log(
+            "消耗 " +
+            amount +
+            " 点体力，剩余：" +
+            currentEnergy
+        );
+
+        return true;
+    }
 }

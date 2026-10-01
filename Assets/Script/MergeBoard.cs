@@ -20,6 +20,12 @@ public class MergeBoard : MonoBehaviour
     [SerializeField]
     private MergeItem itemPrefab;
 
+    [SerializeField]
+    private ItemData flourProducerData;
+
+    [SerializeField]
+    private ItemData milkProducerData;
+
     // 保存所有棋盘格子
     private List<BoardSlot> slots = new List<BoardSlot>();
 
@@ -43,6 +49,8 @@ public class MergeBoard : MonoBehaviour
 
         SpawnItem(4, startingLevel2Item);
         SpawnItem(5, startingLevel2Item);
+        SpawnItem(12,flourProducerData);
+        SpawnItem(15,milkProducerData );
     }
 
     private void CreateSlot(int index)
@@ -299,6 +307,20 @@ public class MergeBoard : MonoBehaviour
 
             item.SnapTo(slot);
         }
+    }
+
+    //判断还有没有空格
+    public bool HasEmptySlot()
+    {
+        foreach (BoardSlot slot in slots)
+        {
+            if (slot.GetItem() == null)
+            {
+                return true;
+            }
+        }
+
+        return false;
     }
 
 }
