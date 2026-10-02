@@ -25,6 +25,11 @@ public class ItemData : ScriptableObject
     // 合成等级
     public int level = 1;
 
+    // 玩家达到多少级后，
+    // 该物品才允许进入订单
+    [Min(1)]
+    public int requiredPlayerLevel = 1;
+
     // 图片
     public Sprite icon;
 

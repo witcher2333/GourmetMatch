@@ -27,6 +27,9 @@ public class MergeBoard : MonoBehaviour
     private ItemData milkProducerData;
 
     [SerializeField]
+    private ItemData coffeeProducerData;
+
+    [SerializeField]
     private OrderManager orderManager;
 
     [SerializeField]
@@ -60,6 +63,7 @@ public class MergeBoard : MonoBehaviour
         SpawnItem(5, startingLevel2Item);
         SpawnItem(12,flourProducerData);
         SpawnItem(15,milkProducerData );
+        SpawnItem(14,coffeeProducerData);
 
         UpdateSellButton();
     }

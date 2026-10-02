@@ -3426,6 +3426,7 @@ MonoBehaviour:
   itemPrefab: {fileID: 1033706891889164749, guid: 1a5ffe36bf407ab4da94bb83948a1036, type: 3}
   flourProducerData: {fileID: 11400000, guid: 3334a348bcaf1334fb688e737295b379, type: 2}
   milkProducerData: {fileID: 11400000, guid: 5b33e79c42856c24a90bf46bb4c869e2, type: 2}
+  coffeeProducerData: {fileID: 11400000, guid: 07a48e4c88cbfe145a5e854331e82763, type: 2}
   orderManager: {fileID: 1804040852}
   sellButton: {fileID: 1484886905}
 --- !u!4 &1804040850
@@ -3477,10 +3478,18 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::OrderManager
   board: {fileID: 1804040849}
   orderItems:
+  - {fileID: 11400000, guid: 75b53c5e0b4ed144fa3cf5469ab92b48, type: 2}
   - {fileID: 11400000, guid: 4c40a260f92a6a34a9efe3eed2daefc5, type: 2}
-  - {fileID: 11400000, guid: 7e538060b89330741af30403d429059a, type: 2}
   - {fileID: 11400000, guid: 4599610d4cbe32141bca8c513b34a37a, type: 2}
+  - {fileID: 11400000, guid: 18157d9b16ca6a2438e54dca1a1dc85f, type: 2}
+  - {fileID: 11400000, guid: 182c88a65d11cd1458a58d2d338bcfbb, type: 2}
+  - {fileID: 11400000, guid: 7e538060b89330741af30403d429059a, type: 2}
   - {fileID: 11400000, guid: a8e42470fbcc1e246a2017a3b793a1c0, type: 2}
+  - {fileID: 11400000, guid: 3aab1450c9f30a24bacbf39250af8dde, type: 2}
+  - {fileID: 11400000, guid: 9cc0e052054df7b4e91c40477bee020e, type: 2}
+  - {fileID: 11400000, guid: 17422f5d77fa80d4eaaf8ce6b4411474, type: 2}
+  - {fileID: 11400000, guid: f3b21a44b8f400948b809f6ed22458f9, type: 2}
+  - {fileID: 11400000, guid: c8765d02723370943be93503b58bd587, type: 2}
   orderText: {fileID: 1536343957}
   coinText: {fileID: 61138561}
   submitButton: {fileID: 1350616614}

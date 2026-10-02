@@ -242,11 +242,17 @@ public class OrderManager : MonoBehaviour
 
         List<ItemData> candidates =new List<ItemData>();
 
+        int currentPlayerLevel = 1;
         int maxAllowedItemLevel = 2;
 
         if (playerProgress != null)
         {
-            maxAllowedItemLevel =playerProgress.GetMaxUnlockedItemLevel();
+            currentPlayerLevel =
+                playerProgress.GetPlayerLevel();
+
+            maxAllowedItemLevel =
+                playerProgress
+                    .GetMaxUnlockedItemLevel();
         }
 
         // 从 Inspector 的 orderItems 中
@@ -269,6 +275,19 @@ public class OrderManager : MonoBehaviour
                 // 物品等级超过玩家当前解锁范围
                 if (item.level >
                     maxAllowedItemLevel)
+                {
+                    continue;
+                }
+
+                // 还没有达到该物品要求的玩家等级
+                int requiredPlayerLevel =
+                    Mathf.Max(
+                        1,
+                        item.requiredPlayerLevel
+                    );
+
+                if (currentPlayerLevel <
+                    requiredPlayerLevel)
                 {
                     continue;
                 }
