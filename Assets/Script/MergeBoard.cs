@@ -26,6 +26,15 @@ public class MergeBoard : MonoBehaviour
     [SerializeField]
     private ItemData milkProducerData;
 
+    [SerializeField]
+    private OrderManager orderManager;
+
+    [SerializeField]
+    private Button sellButton;
+
+    // 当前选中的普通物品
+    private MergeItem selectedItem;
+
     // 保存所有棋盘格子
     private List<BoardSlot> slots = new List<BoardSlot>();
 
@@ -51,6 +60,8 @@ public class MergeBoard : MonoBehaviour
         SpawnItem(5, startingLevel2Item);
         SpawnItem(12,flourProducerData);
         SpawnItem(15,milkProducerData );
+
+        UpdateSellButton();
     }
 
     private void CreateSlot(int index)
@@ -193,9 +204,7 @@ public class MergeBoard : MonoBehaviour
 
 
     // 尝试消耗一个指定等级的食材
-    public bool TryConsumeItem(
-    ItemData targetData
-)
+    public bool TryConsumeItem(ItemData targetData)
     {
         foreach (BoardSlot slot in slots)
         {
@@ -209,6 +218,11 @@ public class MergeBoard : MonoBehaviour
 
             if (item.Data == targetData)
             {
+                if (item == selectedItem)
+                {
+                    ClearSelection();
+                }
+
                 item.gameObject.SetActive(
                     false
                 );
@@ -270,6 +284,8 @@ public class MergeBoard : MonoBehaviour
     //clean the table
     public void ClearBoard()
     {
+        ClearSelection();
+
         foreach (BoardSlot slot in slots)
         {
             MergeItem item =
@@ -360,6 +376,187 @@ public class MergeBoard : MonoBehaviour
         }
 
         return false;
+    }
+
+    // 选择一个普通物品
+    public void SelectItem(MergeItem item)
+    {
+        if (item == null ||
+            item.Data == null)
+        {
+            ClearSelection();
+            return;
+        }
+
+        // Producer 不允许进入出售选择
+        if (item.Data.itemType ==
+            ItemType.Producer)
+        {
+            ClearSelection();
+            return;
+        }
+
+        // 再次点击同一物品时取消选择
+        if (selectedItem == item)
+        {
+            ClearSelection();
+            return;
+        }
+
+        // 先取消之前的选择
+        if (selectedItem != null)
+        {
+            selectedItem.SetSelected(
+                false
+            );
+        }
+
+        selectedItem = item;
+
+        selectedItem.SetSelected(
+            true
+        );
+
+        UpdateSellButton();
+
+        Debug.Log(
+            "选中：" +
+            selectedItem.Data.itemName
+        );
+    }
+
+    // 取消当前选择
+    public void ClearSelection()
+    {
+        if (selectedItem != null)
+        {
+            selectedItem.SetSelected(
+                false
+            );
+        }
+
+        selectedItem = null;
+
+        UpdateSellButton();
+    }
+
+    // 出售当前选择的物品
+    public void SellSelectedItem()
+    {
+        if (selectedItem == null ||
+            selectedItem.Data == null)
+        {
+            Debug.Log(
+                "当前没有选择可以出售的物品。"
+            );
+
+            UpdateSellButton();
+            return;
+        }
+
+        if (selectedItem.Data.itemType ==
+            ItemType.Producer)
+        {
+            Debug.Log(
+                "Producer 不能出售！"
+            );
+
+            ClearSelection();
+            return;
+        }
+
+        if (orderManager == null)
+        {
+            Debug.LogError(
+                "MergeBoard 没有设置 OrderManager！"
+            );
+
+            return;
+        }
+
+        MergeItem itemToSell =
+            selectedItem;
+
+        string itemName =
+            itemToSell.Data.itemName;
+
+        int sellPrice =
+            GetSellPrice(
+                itemToSell.Data
+            );
+
+        ClearSelection();
+
+        itemToSell.gameObject.SetActive(
+            false
+        );
+
+        Destroy(
+            itemToSell.gameObject
+        );
+
+        orderManager.AddCoins(
+            sellPrice
+        );
+
+        Debug.Log(
+            "出售 " +
+            itemName +
+            "，获得 " +
+            sellPrice +
+            " Coins"
+        );
+    }
+
+    // 根据物品等级计算售价
+    private int GetSellPrice(
+        ItemData item
+    )
+    {
+        if (item == null)
+        {
+            return 0;
+        }
+
+        int level =
+            Mathf.Max(
+                1,
+                item.level
+            );
+
+        switch (level)
+        {
+            case 1:
+                return 2;
+
+            case 2:
+                return 5;
+
+            case 3:
+                return 12;
+
+            case 4:
+                return 25;
+
+            default:
+                return 25 +
+                    (level - 4) * 15;
+        }
+    }
+
+    // 更新出售按钮状态
+    private void UpdateSellButton()
+    {
+        if (sellButton == null)
+        {
+            return;
+        }
+
+        sellButton.interactable =
+            selectedItem != null &&
+            selectedItem.Data != null &&
+            selectedItem.Data.itemType ==
+                ItemType.Mergeable;
     }
 
 }

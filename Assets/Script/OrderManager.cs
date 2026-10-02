@@ -448,6 +448,71 @@ public class OrderManager : MonoBehaviour
         }
     }
 
+    // 增加金币
+    public void AddCoins(int amount)
+    {
+        if (amount <= 0)
+        {
+            return;
+        }
+
+        coins += amount;
+
+        UpdateUI();
+
+        Debug.Log(
+            "获得 " +
+            amount +
+            " Coins，当前金币：" +
+            coins
+        );
+    }
+
+    // 是否有足够金币
+    public bool CanAfford(int amount)
+    {
+        if (amount <= 0)
+        {
+            return true;
+        }
+
+        return coins >= amount;
+    }
+
+    // 尝试消费金币
+    public bool TrySpendCoins(int amount)
+    {
+        if (amount <= 0)
+        {
+            return true;
+        }
+
+        if (coins < amount)
+        {
+            Debug.Log(
+                "金币不足，需要 " +
+                amount +
+                " Coins，当前只有 " +
+                coins
+            );
+
+            return false;
+        }
+
+        coins -= amount;
+
+        UpdateUI();
+
+        Debug.Log(
+            "消费 " +
+            amount +
+            " Coins，剩余：" +
+            coins
+        );
+
+        return true;
+    }
+
     public int GetCoins()
     {
         return coins;

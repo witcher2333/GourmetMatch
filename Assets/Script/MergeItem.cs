@@ -178,6 +178,11 @@ public class MergeItem : MonoBehaviour,
         PointerEventData eventData
     )
     {
+        if (board != null)
+        {
+            board.ClearSelection();
+        }
+
         originalSlot =
             GetComponentInParent<BoardSlot>();
 
@@ -304,9 +309,7 @@ public class MergeItem : MonoBehaviour,
     }
 
     //点击生产器
-    public void OnPointerClick(
-    PointerEventData eventData
-)
+    public void OnPointerClick(PointerEventData eventData)
     {
         // 没有数据
         if (Data == null)
@@ -314,9 +317,14 @@ public class MergeItem : MonoBehaviour,
             return;
         }
 
-        // 普通食材点击没有效果
+        // 普通食材点击后选中
         if (Data.itemType != ItemType.Producer)
         {
+            if (board != null)
+            {
+                board.SelectItem(this);
+            }
+
             return;
         }
 
@@ -534,6 +542,42 @@ public class MergeItem : MonoBehaviour,
             minutes.ToString("00") +
             ":" +
             seconds.ToString("00");
+    }
+
+    // 显示或取消选中状态
+    public void SetSelected(bool selected)
+    {
+        if (itemImage == null ||
+            Data == null)
+        {
+            return;
+        }
+
+        if (selected)
+        {
+            // 选中时使用黄色
+            itemImage.color =
+                new Color(
+                    1f,
+                    0.8f,
+                    0.25f,
+                    1f
+                );
+        }
+        else
+        {
+            // 取消选中后恢复原本颜色
+            if (Data.icon != null)
+            {
+                itemImage.color =
+                    Color.white;
+            }
+            else
+            {
+                itemImage.color =
+                    Data.backgroundColor;
+            }
+        }
     }
 
     public int GetProducerCharges()

@@ -305,4 +305,57 @@ public class FoodProducer : MonoBehaviour
 
         return true;
     }
+
+    // 体力是否已经满了
+    public bool IsEnergyFull()
+    {
+        return currentEnergy >= maxEnergy;
+    }
+
+    // 尝试增加体力
+    public bool TryAddEnergy(int amount)
+    {
+        if (amount <= 0)
+        {
+            return false;
+        }
+
+        if (currentEnergy >= maxEnergy)
+        {
+            Debug.Log(
+                "体力已经满了！"
+            );
+
+            return false;
+        }
+
+        int oldEnergy =
+            currentEnergy;
+
+        currentEnergy =
+            Mathf.Min(
+                currentEnergy + amount,
+                maxEnergy
+            );
+
+        // 加到满体力以后停止恢复计时
+        if (currentEnergy >= maxEnergy)
+        {
+            lastEnergyTimeUtc =
+                DateTime.UtcNow;
+        }
+
+        UpdateUI();
+
+        Debug.Log(
+            "恢复 " +
+            (currentEnergy - oldEnergy) +
+            " 点体力，当前：" +
+            currentEnergy +
+            " / " +
+            maxEnergy
+        );
+
+        return true;
+    }
 }
