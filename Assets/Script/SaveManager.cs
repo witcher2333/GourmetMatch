@@ -16,6 +16,10 @@ public class SaveManager : MonoBehaviour
     [SerializeField]
     private ItemCatalog catalog;
 
+    [SerializeField]
+    private PlayerProgressManager
+    playerProgress;
+
     private string savePath;
 
     private void Awake()
@@ -41,9 +45,7 @@ public class SaveManager : MonoBehaviour
 
     public void SaveGame()
     {
-        if (board == null ||
-            producer == null ||
-            orderManager == null)
+        if (board == null || producer == null || orderManager == null || playerProgress == null)
         {
             Debug.LogError(
                 "SaveManager 缺少引用！"
@@ -69,6 +71,13 @@ public class SaveManager : MonoBehaviour
         // 金币
         saveData.coins =
             orderManager.GetCoins();
+
+        // 玩家等级和经验
+        saveData.playerLevel =
+            playerProgress.GetPlayerLevel();
+
+        saveData.currentXp =
+            playerProgress.GetCurrentXp();
 
         // 当前随机订单内容
         saveData.orderRequirements =
@@ -140,6 +149,13 @@ public class SaveManager : MonoBehaviour
     saveData.energy,
     saveData.lastEnergyTimeUtc
 );
+
+        // 必须先恢复玩家等级，
+        // 再恢复或生成订单
+        playerProgress.LoadState(
+            saveData.playerLevel,
+            saveData.currentXp
+        );
 
         // 恢复金币和随机订单
         orderManager.LoadState(

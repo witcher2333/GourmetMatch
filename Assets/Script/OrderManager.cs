@@ -34,6 +34,10 @@ public class OrderManager : MonoBehaviour
     [SerializeField]
     private Button submitButton;
 
+    [SerializeField]
+    private PlayerProgressManager
+    playerProgress;
+
     // 一个订单最多包含多少种物品
     [SerializeField]
     private int maxRequirementTypes = 2;
@@ -100,8 +104,9 @@ public class OrderManager : MonoBehaviour
         }
 
         // 保存奖励，避免生成新订单后数值改变
-        int completedReward =
-            currentReward;
+        int completedReward = currentReward;
+
+        int completedXp = CalculateXpReward(completedReward);
 
         // 第二阶段：所有物品都够，
         // 才开始统一消耗
@@ -135,10 +140,26 @@ public class OrderManager : MonoBehaviour
 
         coins += completedReward;
 
+        if (playerProgress != null)
+        {
+            playerProgress.AddXp(
+                completedXp
+            );
+        }
+        else
+        {
+            Debug.LogError(
+                "OrderManager 没有设置 " +
+                "PlayerProgressManager！"
+            );
+        }
+
         Debug.Log(
             "订单完成，获得 " +
             completedReward +
-            " Coins"
+            " Coins 和 " +
+            completedXp +
+            " XP"
         );
 
         GenerateNextOrder();
@@ -219,8 +240,14 @@ public class OrderManager : MonoBehaviour
     {
         currentRequirements.Clear();
 
-        List<ItemData> candidates =
-            new List<ItemData>();
+        List<ItemData> candidates =new List<ItemData>();
+
+        int maxAllowedItemLevel = 2;
+
+        if (playerProgress != null)
+        {
+            maxAllowedItemLevel =playerProgress.GetMaxUnlockedItemLevel();
+        }
 
         // 从 Inspector 的 orderItems 中
         // 建立合法候选池
@@ -234,8 +261,14 @@ public class OrderManager : MonoBehaviour
                 }
 
                 // Producer 不能成为订单物品
-                if (item.itemType !=
-                    ItemType.Mergeable)
+                if (item.itemType !=ItemType.Mergeable)
+                {
+                    continue;
+                }
+
+                // 物品等级超过玩家当前解锁范围
+                if (item.level >
+                    maxAllowedItemLevel)
                 {
                     continue;
                 }
@@ -379,6 +412,18 @@ public class OrderManager : MonoBehaviour
         return reward;
     }
 
+    private int CalculateXpReward(
+    int coinReward
+)
+    {
+        // XP 等于金币奖励的五分之一，
+        // 并保证至少获得 1 XP
+        return Mathf.Max(
+            1,
+            coinReward / 5
+        );
+    }
+
     private void UpdateUI()
     {
         if (coinText != null)
@@ -431,10 +476,13 @@ public class OrderManager : MonoBehaviour
                 );
             }
 
+            builder.AppendLine( "Reward: " + currentReward + " Coins" );
+
             builder.Append(
-                "Reward: " +
-                currentReward +
-                " Coins"
+                "XP: " +
+                CalculateXpReward(
+                    currentReward
+                )
             );
 
             orderText.text =

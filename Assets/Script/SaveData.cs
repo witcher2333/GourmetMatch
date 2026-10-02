@@ -49,4 +49,10 @@ public class GameSaveData
 
     //最后一次计算体力恢复的时间
     public string lastEnergyTimeUtc;
+
+    // 玩家等级
+    public int playerLevel;
+
+    // 当前等级拥有的经验
+    public int currentXp;
 }
