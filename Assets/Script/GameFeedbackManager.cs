@@ -74,6 +74,18 @@ public class GameFeedbackManager :
             messageCanvasGroup.blocksRaycasts =
                 false;
         }
+
+        ConfigureLayoutContainer(
+            "TopBar"
+        );
+
+        ConfigureLayoutContainer(
+            "OrderPanel"
+        );
+
+        ConfigureLayoutContainer(
+            "BottomBar"
+        );
     }
 
     private void Start()
@@ -220,6 +232,36 @@ public class GameFeedbackManager :
     public void PlayErrorSound()
     {
         PlayClip(errorClip);
+    }
+
+    private void ConfigureLayoutContainer(
+        string objectName
+    )
+    {
+        GameObject container =
+            GameObject.Find(objectName);
+
+        if (container == null)
+        {
+            return;
+        }
+
+        UnityEngine.UI.Image background =
+            container.GetComponent<
+                UnityEngine.UI.Image
+            >();
+
+        if (background == null)
+        {
+            return;
+        }
+
+        // 这些对象只负责组织 UI，不能覆盖棋盘输入。
+        background.raycastTarget = false;
+
+        Color color = background.color;
+        color.a = 0f;
+        background.color = color;
     }
 
     private void PlayClip(

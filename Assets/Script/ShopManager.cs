@@ -26,9 +26,26 @@ public class ShopManager : MonoBehaviour
     [SerializeField]
     private int itemPrice = 15;
 
-    private void Start()
+    private void Awake()
     {
         CloseShop();
+    }
+
+    private void Update()
+    {
+        if (shopPanel == null ||
+            !shopPanel.activeSelf)
+        {
+            return;
+        }
+
+        if (UnityEngine.InputSystem.Keyboard.current !=
+                null &&
+            UnityEngine.InputSystem.Keyboard.current
+                .escapeKey.wasPressedThisFrame)
+        {
+            CloseShop();
+        }
     }
 
     public void OpenShop()
