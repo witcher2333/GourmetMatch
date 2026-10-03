@@ -176,6 +176,15 @@ public class MergeBoard : MonoBehaviour
 
         newItem.SnapTo(selectedSlot);
 
+        newItem.PlaySpawnAnimation();
+
+        if (GameFeedbackManager.Instance !=
+            null)
+        {
+            GameFeedbackManager.Instance
+                .PlaySpawnSound();
+        }
+
         Debug.Log(
             "生产：" + data.itemName
         );
@@ -502,6 +511,22 @@ public class MergeBoard : MonoBehaviour
         orderManager.AddCoins(
             sellPrice
         );
+
+        if (GameFeedbackManager.Instance !=
+    null)
+        {
+            GameFeedbackManager.Instance
+                .ShowMessage(
+                    "Sold " +
+                    itemName +
+                    " +" +
+                    sellPrice +
+                    " Coins"
+                );
+
+            GameFeedbackManager.Instance
+                .PlayCoinSound();
+        }
 
         Debug.Log(
             "出售 " +

@@ -140,6 +140,21 @@ public class OrderManager : MonoBehaviour
 
         coins += completedReward;
 
+        if (GameFeedbackManager.Instance != null)
+        {
+            GameFeedbackManager.Instance
+                .ShowMessage(
+                    "Order Complete! +" +
+                    completedReward +
+                    " Coins, +" +
+                    completedXp +
+                    " XP"
+                );
+
+            GameFeedbackManager.Instance
+                .PlayOrderSound();
+        }
+
         if (playerProgress != null)
         {
             playerProgress.AddXp(

@@ -61,6 +61,18 @@ public class PlayerProgressManager :
                 "玩家升级！当前等级：" +
                 playerLevel
             );
+
+            if (GameFeedbackManager.Instance != null)
+            {
+                GameFeedbackManager.Instance
+                    .ShowMessage(
+                        "Level Up! Level " +
+                        playerLevel
+                    );
+
+                GameFeedbackManager.Instance
+                    .PlayLevelUpSound();
+            }
         }
 
         UpdateUI();

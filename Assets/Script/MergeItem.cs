@@ -3,6 +3,7 @@ using UnityEngine.UI;
 using UnityEngine.EventSystems;
 using TMPro;
 using System;
+using System.Collections;
 
 [RequireComponent(typeof(Image))]
 [RequireComponent(typeof(CanvasGroup))]
@@ -40,6 +41,9 @@ public class MergeItem : MonoBehaviour,
 
     // 每秒刷新一次生产器冷却显示
     private float producerUiTimer = 0f;
+
+    private Coroutine
+    scaleAnimationCoroutine;
 
     // 当前物品的数据
     public ItemData Data { get; private set; }
@@ -293,10 +297,28 @@ public class MergeItem : MonoBehaviour,
                 return;
             }
 
+            ItemData mergedData =
+    Data.nextItem;
+
             // 升级目标物品
             targetItem.SetData(
-                Data.nextItem
+                mergedData
             );
+
+            targetItem.PlayMergeAnimation();
+
+            if (GameFeedbackManager.Instance !=
+                null)
+            {
+                GameFeedbackManager.Instance
+                    .PlayMergeSound();
+
+                GameFeedbackManager.Instance
+                    .ShowMessage(
+                        "Merged: " +
+                        mergedData.itemName
+                    );
+            }
 
             // 删除当前物品
             Destroy(gameObject);
@@ -385,6 +407,22 @@ public class MergeItem : MonoBehaviour,
                 " 秒"
             );
 
+            if (GameFeedbackManager.Instance !=
+    null)
+            {
+                GameFeedbackManager.Instance
+                    .ShowMessage(
+                        Data.itemName +
+                        " cooling: " +
+                        seconds +
+                        "s",
+                        true
+                    );
+
+                GameFeedbackManager.Instance
+                    .PlayErrorSound();
+            }
+
             return;
         }
 
@@ -394,6 +432,18 @@ public class MergeItem : MonoBehaviour,
             Debug.Log(
                 "棋盘已满，无法生产！"
             );
+
+            if (GameFeedbackManager.Instance !=null)
+            {
+                GameFeedbackManager.Instance
+                    .ShowMessage(
+                        "Board is full!",
+                        true
+                    );
+
+                GameFeedbackManager.Instance
+                    .PlayErrorSound();
+            }
 
             return;
         }
@@ -418,6 +468,15 @@ public class MergeItem : MonoBehaviour,
         if (success)
         {
             currentCharges--;
+
+            if (GameFeedbackManager.Instance != null)
+            {
+                GameFeedbackManager.Instance
+                    .ShowMessage(
+                        "Produced: " +
+                        Data.producedItem.itemName
+                    );
+            }
 
             Debug.Log(
                 Data.itemName +
@@ -578,6 +637,117 @@ public class MergeItem : MonoBehaviour,
                     Data.backgroundColor;
             }
         }
+    }
+
+    public void PlaySpawnAnimation()
+    {
+        StartScaleAnimation(
+            0.65f,
+            1.12f,
+            0.22f
+        );
+    }
+
+    public void PlayMergeAnimation()
+    {
+        StartScaleAnimation(
+            1f,
+            1.25f,
+            0.25f
+        );
+    }
+
+    private void StartScaleAnimation(
+        float startScale,
+        float peakScale,
+        float duration
+    )
+    {
+        if (rectTransform == null ||
+            !isActiveAndEnabled)
+        {
+            return;
+        }
+
+        if (scaleAnimationCoroutine != null)
+        {
+            StopCoroutine(
+                scaleAnimationCoroutine
+            );
+        }
+
+        scaleAnimationCoroutine =
+            StartCoroutine(
+                AnimateScale(
+                    startScale,
+                    peakScale,
+                    duration
+                )
+            );
+    }
+
+    private IEnumerator AnimateScale(
+        float startScale,
+        float peakScale,
+        float duration
+    )
+    {
+        float firstDuration =
+            Mathf.Max(
+                0.01f,
+                duration * 0.55f
+            );
+
+        float secondDuration =
+            Mathf.Max(
+                0.01f,
+                duration - firstDuration
+            );
+
+        float elapsed = 0f;
+
+        while (elapsed < firstDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float scale =
+                Mathf.Lerp(
+                    startScale,
+                    peakScale,
+                    elapsed /
+                    firstDuration
+                );
+
+            rectTransform.localScale =
+                Vector3.one * scale;
+
+            yield return null;
+        }
+
+        elapsed = 0f;
+
+        while (elapsed < secondDuration)
+        {
+            elapsed += Time.deltaTime;
+
+            float scale =
+                Mathf.Lerp(
+                    peakScale,
+                    1f,
+                    elapsed /
+                    secondDuration
+                );
+
+            rectTransform.localScale =
+                Vector3.one * scale;
+
+            yield return null;
+        }
+
+        rectTransform.localScale =
+            Vector3.one;
+
+        scaleAnimationCoroutine = null;
     }
 
     public int GetProducerCharges()

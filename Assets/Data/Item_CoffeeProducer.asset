@@ -14,10 +14,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemId: coffee_producer
   itemName: Coffee Machine
-  itemType: 0
+  itemType: 1
   level: 1
   requiredPlayerLevel: 1
-  icon: {fileID: 0}
+  icon: {fileID: 5268092930046860563, guid: 3be3bf5a2fa2fdf43a95f4dc82f33a46, type: 3}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   nextItem: {fileID: 0}
   producedItem: {fileID: 11400000, guid: 9cc0e052054df7b4e91c40477bee020e, type: 2}

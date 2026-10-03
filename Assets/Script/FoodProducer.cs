@@ -278,6 +278,18 @@ public class FoodProducer : MonoBehaviour
                 " 点体力！"
             );
 
+            if (GameFeedbackManager.Instance !=null)
+            {
+                GameFeedbackManager.Instance
+                    .ShowMessage(
+                        "Not enough energy!",
+                        true
+                    );
+
+                GameFeedbackManager.Instance
+                    .PlayErrorSound();
+            }
+
             return false;
         }
 

@@ -105,6 +105,18 @@ public class ShopManager : MonoBehaviour
         Debug.Log(
             "购买 1 点体力成功！"
         );
+
+        if (GameFeedbackManager.Instance !=
+    null)
+        {
+            GameFeedbackManager.Instance
+                .ShowMessage(
+                    "Energy +1"
+                );
+
+            GameFeedbackManager.Instance
+                .PlayCoinSound();
+        }
     }
 
     public void BuyFlour()
@@ -198,5 +210,19 @@ public class ShopManager : MonoBehaviour
             item.itemName +
             " 成功！"
         );
+
+        if (GameFeedbackManager.Instance !=
+    null)
+        {
+            GameFeedbackManager.Instance
+                .ShowMessage(
+                    "Purchased: " +
+                    item.itemName
+                );
+
+            GameFeedbackManager.Instance
+                .PlayCoinSound();
+        }
+
     }
 }

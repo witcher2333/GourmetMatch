@@ -17,7 +17,7 @@ MonoBehaviour:
   itemType: 0
   level: 3
   requiredPlayerLevel: 2
-  icon: {fileID: 0}
+  icon: {fileID: -1850988681521255122, guid: 7ed6b639197f32248a26f96f29c5faa5, type: 3}
   backgroundColor: {r: 0.42767292, g: 0.20722406, b: 0.04976061, a: 1}
   nextItem: {fileID: 11400000, guid: c8765d02723370943be93503b58bd587, type: 2}
   producedItem: {fileID: 0}
