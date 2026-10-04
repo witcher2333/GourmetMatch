@@ -20,6 +20,14 @@ public class MergeBoard : MonoBehaviour
     [SerializeField]
     private MergeItem itemPrefab;
 
+    // 棋盘列数
+    [SerializeField]
+    private int boardColumns = 5;
+
+    // 棋盘行数
+    [SerializeField]
+    private int boardRows = 6;
+
     [SerializeField]
     private ItemData flourProducerData;
 
@@ -49,21 +57,57 @@ public class MergeBoard : MonoBehaviour
             return;
         }
 
-        // 创建 16 个格子
-        for (int i = 0; i < 16; i++)
+        // 根据设置的行数和列数计算总格子数
+        int totalSlots =
+            boardColumns * boardRows;
+
+        // 创建全部棋盘格子
+        for (int i = 0; i < totalSlots; i++)
         {
             CreateSlot(i);
         }
 
-        // 创建最初的四个物品
-        SpawnItem(0, startingLevel1Item);
-        SpawnItem(1, startingLevel1Item);
+        // 第一行放置两个一级物品
+        SpawnItem(
+            0,
+            startingLevel1Item
+        );
 
-        SpawnItem(4, startingLevel2Item);
-        SpawnItem(5, startingLevel2Item);
-        SpawnItem(12,flourProducerData);
-        SpawnItem(15,milkProducerData );
-        SpawnItem(14,coffeeProducerData);
+        SpawnItem(
+            1,
+            startingLevel1Item
+        );
+
+        // 第二行放置两个二级物品
+        SpawnItem(
+            boardColumns,
+            startingLevel2Item
+        );
+
+        SpawnItem(
+            boardColumns + 1,
+            startingLevel2Item
+        );
+
+        // 计算最后一行第一个格子的编号
+        int lastRowStart =
+            totalSlots - boardColumns;
+
+        // 最后一行放置三个生产器
+        SpawnItem(
+            lastRowStart,
+            flourProducerData
+        );
+
+        SpawnItem(
+            lastRowStart + 2,
+            coffeeProducerData
+        );
+
+        SpawnItem(
+            totalSlots - 1,
+            milkProducerData
+        );
 
         UpdateSellButton();
     }
