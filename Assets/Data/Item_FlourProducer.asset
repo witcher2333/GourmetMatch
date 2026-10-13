@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Item_FlourProducer
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemId: flour_producer
-  itemName: Flour Bag
+  itemName: "\u9762\u7C89\u673A"
   itemType: 1
   level: 1
+  requiredPlayerLevel: 1
   icon: {fileID: 8663429314458326037, guid: 78d8163c5125f1d459086293d9892ff4, type: 3}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   nextItem: {fileID: 0}

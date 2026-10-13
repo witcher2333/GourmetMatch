@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Item_Cake
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemId: cake
-  itemName: Cake
+  itemName: "\u86CB\u7CD5"
   itemType: 0
   level: 4
+  requiredPlayerLevel: 1
   icon: {fileID: 8732635013323328055, guid: 7ff8a8dd34090374b9771e47332b3dec, type: 3}
   backgroundColor: {r: 0.4509804, g: 0.7490196, b: 0.54901963, a: 1}
   nextItem: {fileID: 0}

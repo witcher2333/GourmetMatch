@@ -154,14 +154,14 @@ public class PlayerProgressManager :
         if (levelText != null)
         {
             levelText.text =
-                "Level: " +
+                "等级: " +
                 playerLevel;
         }
 
         if (xpText != null)
         {
             xpText.text =
-                "XP: " +
+                "经验: " +
                 currentXp +
                 " / " +
                 requiredXp;

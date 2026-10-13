@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_CoffeeProducer
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemId: coffee_producer
-  itemName: Coffee Machine
+  itemName: "\u5496\u5561\u673A"
   itemType: 1
   level: 1
   requiredPlayerLevel: 1

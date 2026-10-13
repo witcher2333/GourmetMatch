@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Item_Cream
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemId: cream
-  itemName: Cream
+  itemName: "\u5976\u6CB9"
   itemType: 0
   level: 2
+  requiredPlayerLevel: 1
   icon: {fileID: -6422736302288033228, guid: 7631e2b1159a3724d8bc48f7aae1504e, type: 3}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   nextItem: {fileID: 11400000, guid: a8e42470fbcc1e246a2017a3b793a1c0, type: 2}

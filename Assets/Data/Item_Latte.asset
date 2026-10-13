@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_Latte
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemId: latte
-  itemName: Latte
+  itemName: "\u62FF\u94C1"
   itemType: 0
   level: 4
   requiredPlayerLevel: 2

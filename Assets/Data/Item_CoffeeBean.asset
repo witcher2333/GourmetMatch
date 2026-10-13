@@ -13,7 +13,7 @@ MonoBehaviour:
   m_Name: Item_CoffeeBean
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemId: coffee_bean
-  itemName: Coffee Bean
+  itemName: "\u5496\u5561\u8C46"
   itemType: 0
   level: 1
   requiredPlayerLevel: 2

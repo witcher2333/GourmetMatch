@@ -144,11 +144,11 @@ public class OrderManager : MonoBehaviour
         {
             GameFeedbackManager.Instance
                 .ShowMessage(
-                    "Order Complete! +" +
+                    "订单完成! +" +
                     completedReward +
-                    " Coins, +" +
+                    " 金币, +" +
                     completedXp +
-                    " XP"
+                    " 经验"
                 );
 
             GameFeedbackManager.Instance
@@ -463,7 +463,7 @@ public class OrderManager : MonoBehaviour
         if (coinText != null)
         {
             coinText.text =
-                "Coins: " + coins;
+                "金币: " + coins;
         }
 
         if (currentRequirements.Count == 0)
@@ -471,7 +471,7 @@ public class OrderManager : MonoBehaviour
             if (orderText != null)
             {
                 orderText.text =
-                    "No Order";
+                    "暂无订单";
             }
 
             if (submitButton != null)
@@ -489,7 +489,7 @@ public class OrderManager : MonoBehaviour
                 new StringBuilder();
 
             builder.AppendLine(
-                "Order:"
+                "订单:"
             );
 
             foreach (
@@ -505,15 +505,15 @@ public class OrderManager : MonoBehaviour
 
                 builder.AppendLine(
                     requirement.amount +
-                    " x " +
+                    " × " +
                     requirement.item.itemName
                 );
             }
 
-            builder.AppendLine( "Reward: " + currentReward + " Coins" );
+            builder.AppendLine( "奖励: " + currentReward + " 金币 " );
 
             builder.Append(
-                "XP: " +
+                "经验: " +
                 CalculateXpReward(
                     currentReward
                 )

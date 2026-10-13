@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Item_Milk
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemId: milk
-  itemName: Milk
+  itemName: "\u725B\u5976"
   itemType: 0
   level: 1
+  requiredPlayerLevel: 1
   icon: {fileID: -3405352864470664500, guid: f5d3d29f37a58c445a852f8247fa82e7, type: 3}
   backgroundColor: {r: 1, g: 1, b: 1, a: 1}
   nextItem: {fileID: 11400000, guid: 7e538060b89330741af30403d429059a, type: 2}

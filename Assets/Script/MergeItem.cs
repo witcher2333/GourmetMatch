@@ -129,7 +129,7 @@ public class MergeItem : MonoBehaviour,
             else
             {
                 levelLabel.text =
-                    "Lv." + Data.level;
+                    "等级" + Data.level;
             }
         }
 
@@ -413,9 +413,9 @@ public class MergeItem : MonoBehaviour,
                 GameFeedbackManager.Instance
                     .ShowMessage(
                         Data.itemName +
-                        " cooling: " +
+                        " 冷却中，剩余: " +
                         seconds +
-                        "s",
+                        "秒",
                         true
                     );
 
@@ -437,7 +437,7 @@ public class MergeItem : MonoBehaviour,
             {
                 GameFeedbackManager.Instance
                     .ShowMessage(
-                        "Board is full!",
+                        "棋盘已满，无法生产！",
                         true
                     );
 
@@ -597,7 +597,7 @@ public class MergeItem : MonoBehaviour,
         int seconds = totalSeconds % 60;
 
         levelLabel.text =
-            "Cooling\n" +
+            "冷却中\n" +
             minutes.ToString("00") +
             ":" +
             seconds.ToString("00");

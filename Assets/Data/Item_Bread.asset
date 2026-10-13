@@ -13,9 +13,10 @@ MonoBehaviour:
   m_Name: Item_Bread
   m_EditorClassIdentifier: Assembly-CSharp::ItemData
   itemId: bread
-  itemName: Bread
+  itemName: "\u9762\u5305"
   itemType: 0
   level: 3
+  requiredPlayerLevel: 1
   icon: {fileID: -4431494890709657585, guid: 613fce04d041d194f9b62655273dd16c, type: 3}
   backgroundColor: {r: 0.7921569, g: 0.4509804, b: 0.7490196, a: 1}
   nextItem: {fileID: 11400000, guid: 18157d9b16ca6a2438e54dca1a1dc85f, type: 2}

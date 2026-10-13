@@ -561,11 +561,11 @@ public class MergeBoard : MonoBehaviour
         {
             GameFeedbackManager.Instance
                 .ShowMessage(
-                    "Sold " +
+                    "已出售 " +
                     itemName +
                     " +" +
                     sellPrice +
-                    " Coins"
+                    " 金币"
                 );
 
             GameFeedbackManager.Instance

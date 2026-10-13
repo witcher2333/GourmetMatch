@@ -95,11 +95,11 @@ public class FoodProducer : MonoBehaviour
         if (currentEnergy >= maxEnergy)
         {
             energyText.text =
-                "Energy: " +
+                "体力: " +
                 currentEnergy +
                 " / " +
                 maxEnergy +
-                "\nFull";
+                "\n已满";
         }
         else
         {
@@ -126,11 +126,11 @@ public class FoodProducer : MonoBehaviour
                 remainingSeconds % 60;
 
             energyText.text =
-                "Energy: " +
+                "体力: " +
                 currentEnergy +
                 " / " +
                 maxEnergy +
-                "\nNext: " +
+                "\n下次恢复: " +
                 minutes.ToString("00") +
                 ":" +
                 seconds.ToString("00");
@@ -282,7 +282,7 @@ public class FoodProducer : MonoBehaviour
             {
                 GameFeedbackManager.Instance
                     .ShowMessage(
-                        "Not enough energy!",
+                        "体力不足!",
                         true
                     );
 
