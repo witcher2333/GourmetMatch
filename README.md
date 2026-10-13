@@ -1,4 +1,4 @@
-# 肥鹅美食街
+# 模仿肥鹅美食街_合成经营小游戏
 
 一个使用 Unity 制作的 2D 食物合成与经营小游戏。玩家在棋盘上生产并合成食材，完成订单获得金币和经验，再通过商店购买资源继续经营。
 
@@ -10,7 +10,6 @@
 - 输入系统：Input System
 - Android 构建：需要 Android Build Support、Android SDK & NDK Tools 和 OpenJDK
 
-建议使用 Unity Hub 安装或打开与项目一致的 Unity 版本。首次打开时，等待 Unity 完成资源导入和脚本编译。
 
 ## 当前功能
 
@@ -38,12 +37,8 @@ Assets/
 
 主要游戏场景：`Assets/Scenes/MainScene.unity`。
 
-## 在编辑器中运行
 
-1. 用 Unity Hub 打开项目。
-2. 在 Project 窗口打开 `Assets/Scenes/MainScene.unity`。
-3. 点击 Unity 编辑器顶部的 **Play** 按钮运行。
-4. 点击生产器生成食材，拖动相同食物进行合成；通过订单、商店和出售按钮体验经营流程。
+操作: 点击生产器生成食材，拖动相同食物进行合成；通过订单、商店和出售按钮体验经营流程。
 
 ## 构建 Android APK
 
